@@ -1,0 +1,35 @@
+services:
+  postgres_db:
+    container_name: pgdb_container
+    image: postgres:13.4-alpine
+    command: postgres -c 'max_connections=600'
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres 
+      PGDATA: /var/lib/postgresql/data/pgdata
+      LANG: ru_RU.utf8
+      POSTGRES_INITDB_ARGS: '-E UTF8 --locale=ru_RU.utf-8 --lc-messages=C'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+        - 5432:5432
+
+  tests:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    working_dir: '/tests'
+    depends_on:
+      - postgres_db
+    entrypoint: 
+      - FINISH_TEST_FILE='/results/testresult.txt'
+      - FINISH_TEST_MESSAGE='DONE'
+    volumes:
+      - type: bind
+        source: ./results
+        target: /results
+    command: dotnet vstest /tests/WaitFinish.Tests.dll
+
+volumes:
+  pgdata:
