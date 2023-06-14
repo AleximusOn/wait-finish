@@ -26,7 +26,7 @@ namespace WaitFinish.Tests
 
 			public IEnumerator GetEnumerator()
 			{
-				for (var i = 0; i < 30; i++)
+				for (var i = 0; i < 19; i++)
 				{
 					yield return new[] { _rnd.Next(100) * 10 };
 				}

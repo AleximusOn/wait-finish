@@ -22,9 +22,8 @@ services:
     working_dir: '/tests'
     depends_on:
       - postgres_db
-    entrypoint: 
-      - FINISH_TEST_FILE='/results/testresult.txt'
-      - FINISH_TEST_MESSAGE='DONE'
+    environment:
+      - TEST_DONE_FILE_PATH=/results
     volumes:
       - type: bind
         source: ./results

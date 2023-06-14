@@ -1,35 +1,43 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.IO;
 using NUnit.Framework;
 
 namespace WaitFinish.Tests
 {
-    [SetUpFixture]
-    public class Startup
-    {
-        private string _listenedFile;
-        private string _waitingText = "IS_FINISH";
+	[SetUpFixture]
+	public class Startup
+	{
+		private const string _testDoneFileName = "TEST_IS_DONE.txt";
+		private const string _waitingText = "DONE";
 
-        [OneTimeSetUp]
-        public void Setup()
-        {
-            _listenedFile = System.Environment.GetEnvironmentVariable("FINISH_TEST_FILE");
-            var waitingText = System.Environment.GetEnvironmentVariable("FINISH_TEST_MESSAGE");
-            if (waitingText != null)
-            {
-                _waitingText = waitingText;
-            }
-        }
+		private string _resultFile;
 
-        [OneTimeTearDown]
-        public void TearDown()
-        {
-            if (_listenedFile != null)
-            {
-                System.IO.File.WriteAllText(_listenedFile, _waitingText);
-            }
-        }
-    }
+		[OneTimeSetUp]
+		public void Setup()
+		{
+			var testDoneFilePath = Environment.GetEnvironmentVariable("TEST_DONE_FILE_PATH");
+			if (_testDoneFileName != null)
+			{
+				if (!Directory.Exists(testDoneFilePath))
+				{
+					Directory.CreateDirectory(testDoneFilePath);
+				}
+
+				_resultFile = Path.Combine(testDoneFilePath, _testDoneFileName);
+				if (File.Exists(_resultFile))
+				{
+					File.Delete(_resultFile);
+				}
+			}
+		}
+
+		[OneTimeTearDown]
+		public void TearDown()
+		{
+			if (_resultFile != null)
+			{
+				File.WriteAllText(_resultFile, _waitingText);
+			}
+		}
+	}
 }
